@@ -53,3 +53,5 @@ dkms.conf
 TheatrixxOptoRDM/Debug/
 TheatrixxOptoRDM/driver_init.c
 TheatrixxOptoRDM/driver_init.h
+TheatrixxDigitalHoistController/Debug/
+TheatrixxDigitalHoistController/Release/
