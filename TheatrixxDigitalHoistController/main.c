@@ -12,7 +12,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define IS_REMOTE pdFALSE
+#define IS_REMOTE pdTRUE
 
 int main(void)
 {
