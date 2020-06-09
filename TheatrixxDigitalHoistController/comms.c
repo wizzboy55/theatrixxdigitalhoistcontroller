@@ -97,8 +97,6 @@ void vCommsSlaveTask(void *p) {
 	rs485Status.rxBufferSize = sizeof(currentMessage);
 	rs485Status.rxQueue = xQueueCreate(1, sizeof(currentMessage));
 	
-	BaseType_t sent= pdFALSE;
-	
 	for(;;) {
 		HoistMessage_t rxMessage;
 		
