@@ -38,11 +38,13 @@ SercomSpiHwConfig_t controlSpiHwConfig = {
 };
 
 SpiShiftRegistersConfig_t remoteLedShiftRegisterConfig = {
+	.latchPolarity = LatchHigh,
 	.dataOrder = MSBFirst,
 	.isInit = pdFALSE,
 };
 
 SpiShiftRegistersConfig_t remoteSwitchShiftRegisterConfig = {
+	.latchPolarity = LatchLow,
 	.dataOrder = MSBFirst,
 	.isInit = pdFALSE,
 };

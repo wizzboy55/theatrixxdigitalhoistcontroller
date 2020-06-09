@@ -68,7 +68,8 @@ void vRemoteTask(void* p) {
 		if(reset == pdTRUE) {
 			memset(&hoists_currentSwitches, 0, sizeof(hoists_currentSwitches));
 		} else if(lock == pdFALSE) {
-			xGpioShiftRegistersPush(&remoteSwitchShiftRegisterConfigGpio, NULL, (uint8_t*)&hoists_newSwitches, sizeof(hoists_newSwitches));
+			vSpiRegistersReadWriteRegistersAsync(&remoteSwitchShiftRegisterConfig, NULL, (uint8_t*)&hoists_newSwitches, sizeof(hoists_newSwitches), xTaskGetCurrentTaskHandle());
+			xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
 			for(uint8_t i = 0; i < sizeof(HoistControl_t); i++) {
 				hoists_newSwitches.reg[i] ^= 0xFF;	// Flip bits
 			}
@@ -79,9 +80,9 @@ void vRemoteTask(void* p) {
 		}
 		
 		if(lock && (blink & BLINKMASK)) {
-			xGpioShiftRegistersPush(&remoteLedShiftRegisterConfigGpio, (uint8_t*)&hoists_emptySwitches, NULL, sizeof(hoists_emptySwitches));
+			vSpiRegistersReadWriteRegistersAsync(&remoteLedShiftRegisterConfig, (uint8_t*)&hoists_emptySwitches, NULL, sizeof(hoists_emptySwitches), NULL);
 		} else {
-			xGpioShiftRegistersPush(&remoteLedShiftRegisterConfigGpio, (uint8_t*)&hoists_currentSwitches, NULL, sizeof(hoists_currentSwitches));
+			vSpiRegistersReadWriteRegistersAsync(&remoteLedShiftRegisterConfig, (uint8_t*)&hoists_currentSwitches, NULL, sizeof(hoists_currentSwitches), NULL);
 		}
 		
 		if(go == pdTRUE) {
@@ -97,9 +98,13 @@ void vBlinkTimerCallback(TimerHandle_t xTimer) {
 }
 
 BaseType_t xRemoteInit(void) {
+	
+	remoteLedShiftRegisterConfig.hw = remoteLedSpiHwConfig;
+	remoteSwitchShiftRegisterConfig.hw = remoteSwitchSpiHwConfig;
+	
 	BaseType_t res;
-	res = xGpioShiftRegistersInit(&remoteLedShiftRegisterConfigGpio);
-	res &= xGpioShiftRegistersInit(&remoteSwitchShiftRegisterConfigGpio);
+	res = xSpiRegistersInitHardware(&remoteLedShiftRegisterConfig);
+	res = xSpiRegistersInitHardware(&remoteSwitchShiftRegisterConfig);
 	
 	samgpio_setPinFunction(GPIO_SWITCH_GO, GPIO_PIN_FUNCTION_OFF);
 	samgpio_setPinDirection(GPIO_SWITCH_GO, GPIO_DIRECTION_IN);
