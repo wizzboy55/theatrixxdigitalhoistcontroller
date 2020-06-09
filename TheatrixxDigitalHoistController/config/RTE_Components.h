@@ -39,7 +39,7 @@
  *
  * \acme_license_stop
  *
- * Project: TheatrixxOptoRDM
+ * Project: TheatrixxDigitalHoistController
  * Target:  ATSAMC20E18A 
  *
  **/

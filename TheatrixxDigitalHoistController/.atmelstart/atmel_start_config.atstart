@@ -2,16 +2,16 @@ format_version: '2'
 name: My Project
 versions:
   api: '1.0'
-  backend: 1.7.301
+  backend: 1.7.303
   commit: 1e07622763d149970fd8808a8f12ff3b1e84e0d7
   content: unknown
   content_pack_name: unknown
   format: '2'
-  frontend: 1.7.301
-  packs_version_avr8: 1.0.1408
+  frontend: 1.7.303
+  packs_version_avr8: 1.0.1410
   packs_version_qtouch: unknown
-  packs_version_sam: 1.0.1373
-  version_backend: 1.7.301
+  packs_version_sam: 1.0.1554
+  version_backend: 1.7.303
   version_frontend: ''
 board:
   identifier: CustomBoard
@@ -339,7 +339,7 @@ drivers:
       enable_gclk_gen_5__externalclock: 1000000
       enable_gclk_gen_6: false
       enable_gclk_gen_6__externalclock: 1000000
-      enable_gclk_gen_7: false
+      enable_gclk_gen_7: true
       enable_gclk_gen_7__externalclock: 1000000
       gclk_arch_gen_0_enable: true
       gclk_arch_gen_0_idc: false
@@ -376,7 +376,7 @@ drivers:
       gclk_arch_gen_6_oe: false
       gclk_arch_gen_6_oov: false
       gclk_arch_gen_6_runstdby: false
-      gclk_arch_gen_7_enable: false
+      gclk_arch_gen_7_enable: true
       gclk_arch_gen_7_idc: false
       gclk_arch_gen_7_oe: false
       gclk_arch_gen_7_oov: false
@@ -402,9 +402,9 @@ drivers:
       gclk_gen_6_div: 1
       gclk_gen_6_div_sel: false
       gclk_gen_6_oscillator: External Crystal Oscillator 0.4-32MHz (XOSC)
-      gclk_gen_7_div: 1
+      gclk_gen_7_div: 32
       gclk_gen_7_div_sel: false
-      gclk_gen_7_oscillator: External Crystal Oscillator 0.4-32MHz (XOSC)
+      gclk_gen_7_oscillator: 32kHz Ultra Low Power Internal Oscillator (OSCULP32K)
     optional_signals: []
     variant: null
     clocks:
