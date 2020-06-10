@@ -18,6 +18,8 @@ ControlRegisters_t emptyRegisters;
 TimerHandle_t controlTimer;
 #define CONTROL_TIMEOUT 150
 BaseType_t controlTimedOut = pdFALSE;
+uint8_t uValidMessagesReceived = 0;
+#define CONTROL_VALIDMESSAGESTHRESHOLD 5
 
 void vControlStop(void) {
 	controlTimedOut = pdTRUE;
@@ -38,8 +40,12 @@ void vControlNewMessage(HoistControl_t *newMessage) {
 	controlRegisters.led_go = led_go;
 	controlRegisters.led_link = 0xFF;
 	
-	xTimerStart(controlTimer, portMAX_DELAY);
-	controlTimedOut = pdFALSE;
+	if(uValidMessagesReceived < CONTROL_VALIDMESSAGESTHRESHOLD) {
+		uValidMessagesReceived++;
+	} else {
+		xTimerReset(controlTimer, portMAX_DELAY);
+		controlTimedOut = pdFALSE;
+	}
 }
 
 void vControlTask(void* p) {
@@ -57,6 +63,7 @@ void vControlTask(void* p) {
 }
 
 void vControlTimerCallback(TimerHandle_t xTimer) {
+	uValidMessagesReceived = 0;
 	controlTimedOut = pdTRUE;
 }
 
