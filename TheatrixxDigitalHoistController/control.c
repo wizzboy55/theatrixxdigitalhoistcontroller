@@ -29,6 +29,14 @@ inline void vControlDisableContactors(void) {
 	samgpio_clearPinFast(GPIO_DISABLE);
 }
 
+inline BaseType_t xControlEStopPresent(void) {
+	return samgpio_getPinLevel(GPIO_SIGNAL_ESTOP) == 1;
+}
+
+inline BaseType_t xControlShiftRegistersDiagnosticOK(void) {
+	return samgpio_getPinLevel(GPIO_DIAG) == 1;
+}
+
 void vControlStop(void) {
 	controlTimedOut = pdTRUE;
 	xGpioShiftRegistersPush(&controlShiftRegisterConfigGpio, emptyRegisters.reg, NULL, sizeof(ControlRegisters_t));
@@ -61,7 +69,7 @@ void vControlTask(void* p) {
 	memset(&emptyRegisters, 0, sizeof(emptyRegisters));
 	
 	for(;;) {
-		if(controlTimedOut) {
+		if(controlTimedOut || xControlEStopPresent() == pdFALSE) {
 			vControlDisableContactors();
 			vSpiRegistersReadWriteRegistersAsync(&controlShiftRegisterConfig, emptyRegisters.reg, NULL, sizeof(ControlRegisters_t), NULL);
 		} else {
@@ -86,6 +94,12 @@ BaseType_t xControlInit(void) {
 	
 	vControlDisableContactors();
 	samgpio_setPinDirection(GPIO_DISABLE, GPIO_DIRECTION_OUT);
+	
+	samgpio_setPinDirection(GPIO_DIAG, GPIO_DIRECTION_IN);
+	samgpio_setPinPullMode(GPIO_DIAG, GPIO_PULL_UP);
+	
+	samgpio_setPinDirection(GPIO_SIGNAL_ESTOP, GPIO_DIRECTION_IN);
+	samgpio_setPinPullMode(GPIO_SIGNAL_ESTOP, GPIO_PULL_DOWN);
 	
 	controlTimer = xTimerCreate("ControlTimer", CONTROL_TIMEOUT / portTICK_PERIOD_MS, pdFALSE, NULL, vControlTimerCallback);
 	
