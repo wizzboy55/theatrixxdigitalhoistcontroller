@@ -38,9 +38,9 @@ void vControlNewMessage(HoistControl_t *newMessage) {
 	uint8_t led_go = 0;
 	for(uint8_t i = 0; i < sizeof(HoistControl_t); i++) {
 		controlRegisters.hoistControl.reg[i] = newMessage->reg[i];
-		if(i % 2 == 0) {
-			if(newMessage->reg[i] != 0x00 && newMessage->reg[i+1] != 0x00) {
-				led_go |= 1<<(i % 2);
+		if((i % 2) == 0) {
+			if(newMessage->reg[i] != 0x00 || newMessage->reg[i+1] != 0x00) {
+				led_go |= 1<<(5-(i / 2));
 			}
 		}
 	}
