@@ -54,9 +54,9 @@ void vControlTask(void* p) {
 	
 	for(;;) {
 		if(controlTimedOut) {
-			xGpioShiftRegistersPush(&controlShiftRegisterConfigGpio, emptyRegisters.reg, NULL, sizeof(ControlRegisters_t));
+			vSpiRegistersReadWriteRegistersAsync(&controlShiftRegisterConfig, emptyRegisters.reg, NULL, sizeof(ControlRegisters_t), NULL);
 		} else {
-			xGpioShiftRegistersPush(&controlShiftRegisterConfigGpio, controlRegisters.reg, NULL, sizeof(ControlRegisters_t));
+			vSpiRegistersReadWriteRegistersAsync(&controlShiftRegisterConfig, controlRegisters.reg, NULL, sizeof(ControlRegisters_t), NULL);
 		}
 		vTaskDelay(25 / portTICK_PERIOD_MS);
 	}
@@ -70,17 +70,19 @@ void vControlTimerCallback(TimerHandle_t xTimer) {
 BaseType_t xControlInit(void) {
 	BaseType_t res;
 	
-	res = xGpioShiftRegistersInit(&controlShiftRegisterConfigGpio);
+	controlShiftRegisterConfig.hw = controlSpiHwConfig;
 	
-	samgpio_setPinDirection(GPIO_DISABLE, GPIO_DIRECTION_OUT);
+	res = xSpiRegistersInitHardware(&controlShiftRegisterConfig);
+	
 	samgpio_setPinFast(GPIO_DISABLE);
+	samgpio_setPinDirection(GPIO_DISABLE, GPIO_DIRECTION_OUT);
 	
 	controlTimer = xTimerCreate("ControlTimer", CONTROL_TIMEOUT / portTICK_PERIOD_MS, pdFALSE, NULL, vControlTimerCallback);
 	
 	res &= xTaskCreate(vControlTask, "control", configMINIMAL_STACK_SIZE, NULL, configMAX_PRIORITIES - 2, NULL);
 	
 	return res;
-}}
+}
 
 #if (IS_REMOTE == 0)
 void SERCOM2_Handler(void) {

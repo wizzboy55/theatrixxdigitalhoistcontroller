@@ -49,6 +49,13 @@ SpiShiftRegistersConfig_t remoteSwitchShiftRegisterConfig = {
 	.isInit = pdFALSE,
 };
 
+SpiShiftRegistersConfig_t controlShiftRegisterConfig = {
+	.latchPolarity = LatchHigh,
+	.dataOrder = MSBFirst,
+	.isInit = pdFALSE,
+};
+
+// Deprecated
 GpioShiftRegistersConfig_t remoteLedShiftRegisterConfigGpio = {
 	.hw.gpio_clk = GPIO(GPIO_PORTA, 11),
 	.hw.gpio_cs = GPIO(GPIO_PORTA, 9),
@@ -58,6 +65,7 @@ GpioShiftRegistersConfig_t remoteLedShiftRegisterConfigGpio = {
 	.isInit = pdFALSE,
 };
 
+// Deprecated
 GpioShiftRegistersConfig_t remoteSwitchShiftRegisterConfigGpio = {
 	.hw.gpio_clk = GPIO(GPIO_PORTA, 7),
 	.hw.gpio_cs = GPIO(GPIO_PORTA, 5),
@@ -67,6 +75,7 @@ GpioShiftRegistersConfig_t remoteSwitchShiftRegisterConfigGpio = {
 	.isInit = pdFALSE,
 };
 
+// Deprecated
 GpioShiftRegistersConfig_t controlShiftRegisterConfigGpio = {
 	.hw.gpio_clk = GPIO(GPIO_PORTA, 9),
 	.hw.gpio_cs = GPIO(GPIO_PORTA, 10),
