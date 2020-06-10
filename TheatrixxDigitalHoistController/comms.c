@@ -15,7 +15,7 @@ HoistControl_t nextMessage;
 BaseType_t pendingMessage = pdFALSE;
 
 #define COMMS_ADDRESS 0x55;
-#define COMMS_TIMEOUT 100
+#define COMMS_TIMEOUT 150
 
 Rs485Status_t rs485Status;
 
@@ -45,7 +45,7 @@ void vCommsMasterTask(void *p) {
 	rs485Status.config = &rs485Config;
 	rs485Status.rxBuffer = (uint8_t*)&replyMessage;
 	rs485Status.rxBufferSize = sizeof(replyMessage);
-	rs485Status.rxQueue = xQueueCreate(15, sizeof(replyMessage));
+	rs485Status.rxQueue = xQueueCreate(5, sizeof(replyMessage));
 	rs485Status.txBuffer = (uint8_t*)&currentMessage;
 	rs485Status.txBufferSize = sizeof(currentMessage);
 	rs485Status.txTask = xTaskGetCurrentTaskHandle();
@@ -70,12 +70,12 @@ void vCommsMasterTask(void *p) {
 		
 		if(rs485Status.rxQueue != NULL) {
 			while(xQueueReceive(rs485Status.rxQueue, &rxMessage, pdMS_TO_TICKS(COMMS_TIMEOUT)) == pdTRUE) {
-				//samgpio_togglePinLevelFast(rs485Config.ledpin);
 				if(rxMessage.reply == eOK) {
-					//	vRs485SetLinkLed(&rs485Config);
+					vRs485SetLinkLed(&rs485Config);
 				} else {
-					//	vRs485ClearLinkLed(&rs485Config);
+					vRs485ClearLinkLed(&rs485Config);
 				}
+				break;
 			}
 		}
 	}
