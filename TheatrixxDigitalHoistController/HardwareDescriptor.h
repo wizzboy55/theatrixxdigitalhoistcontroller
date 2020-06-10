@@ -18,6 +18,8 @@
 #include "gpio_shiftregisters.h"
 #include "rs485.h"
 
+#define IS_REMOTE 1
+
 #define GPIO_SWITCH_LOCK	GPIO(GPIO_PORTA, 2)
 #define GPIO_SWITCH_RESET	GPIO(GPIO_PORTA, 3)
 #define GPIO_SWITCH_GO		GPIO(GPIO_PORTA, 4)

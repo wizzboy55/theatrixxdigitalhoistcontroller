@@ -73,4 +73,10 @@ BaseType_t xControlInit(void) {
 	res &= xTaskCreate(vControlTask, "control", configMINIMAL_STACK_SIZE, NULL, configMAX_PRIORITIES - 2, NULL);
 	
 	return res;
+}}
+
+#if (IS_REMOTE == 0)
+void SERCOM2_Handler(void) {
+	vSpiRegistersSpiInterruptHandler(&controlShiftRegisterConfig);
 }
+#endif

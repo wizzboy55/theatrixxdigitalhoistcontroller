@@ -133,6 +133,8 @@ void SERCOM0_Handler(void) {
 	vSpiRegistersSpiInterruptHandler(&remoteSwitchShiftRegisterConfig);
 }
 
+#if (IS_REMOTE == 1)
 void SERCOM2_Handler(void) {
 	vSpiRegistersSpiInterruptHandler(&remoteLedShiftRegisterConfig);
 }
+#endif

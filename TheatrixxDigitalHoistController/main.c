@@ -12,8 +12,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define IS_REMOTE pdTRUE
-
 int main(void)
 {
 	/* Initializes MCU, drivers and middleware */
