@@ -21,6 +21,14 @@ BaseType_t controlTimedOut = pdFALSE;
 uint8_t uValidMessagesReceived = 0;
 #define CONTROL_VALIDMESSAGESTHRESHOLD 5
 
+inline void vControlEnableContactors(void) {
+	samgpio_setPinFast(GPIO_DISABLE);
+}
+
+inline void vControlDisableContactors(void) {
+	samgpio_clearPinFast(GPIO_DISABLE);
+}
+
 void vControlStop(void) {
 	controlTimedOut = pdTRUE;
 	xGpioShiftRegistersPush(&controlShiftRegisterConfigGpio, emptyRegisters.reg, NULL, sizeof(ControlRegisters_t));
@@ -54,9 +62,11 @@ void vControlTask(void* p) {
 	
 	for(;;) {
 		if(controlTimedOut) {
+			vControlDisableContactors();
 			vSpiRegistersReadWriteRegistersAsync(&controlShiftRegisterConfig, emptyRegisters.reg, NULL, sizeof(ControlRegisters_t), NULL);
 		} else {
 			vSpiRegistersReadWriteRegistersAsync(&controlShiftRegisterConfig, controlRegisters.reg, NULL, sizeof(ControlRegisters_t), NULL);
+			vControlEnableContactors();
 		}
 		vTaskDelay(25 / portTICK_PERIOD_MS);
 	}
@@ -74,7 +84,7 @@ BaseType_t xControlInit(void) {
 	
 	res = xSpiRegistersInitHardware(&controlShiftRegisterConfig);
 	
-	samgpio_setPinFast(GPIO_DISABLE);
+	vControlDisableContactors();
 	samgpio_setPinDirection(GPIO_DISABLE, GPIO_DIRECTION_OUT);
 	
 	controlTimer = xTimerCreate("ControlTimer", CONTROL_TIMEOUT / portTICK_PERIOD_MS, pdFALSE, NULL, vControlTimerCallback);
