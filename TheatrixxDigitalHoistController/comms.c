@@ -19,8 +19,6 @@ BaseType_t pendingMessage = pdFALSE;
 
 Rs485Status_t rs485Status;
 
-uint8_t mss;
-
 Checksum_t xCommsComputeChecksum(uint8_t* message, Rs485Size_t size) {
 	if(message == NULL) {
 		return 0;
@@ -88,7 +86,6 @@ void vCommsSlaveTask(void *p) {
 	ReplyMessage_t replyMessage;
 	HoistMessage_t currentMessage;
 	
-	
 	rs485Status.config = &rs485Config;
 	rs485Status.txBuffer = (uint8_t*)&replyMessage;
 	rs485Status.txBufferSize = sizeof(replyMessage);
@@ -109,8 +106,6 @@ void vCommsSlaveTask(void *p) {
 				}
 				
 				vControlNewMessage(&currentMessage.hoistControl);
-
-				mss++;
 
 				replyMessage.address = currentMessage.address;
 				replyMessage.checksum = 0;
