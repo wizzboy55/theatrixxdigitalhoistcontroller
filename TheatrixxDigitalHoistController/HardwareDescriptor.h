@@ -27,6 +27,7 @@
 #define GPIO_LED_LINK		GPIO(GPIO_PORTA, 15)
 
 #define GPIO_SIGNAL_ESTOP	GPIO(GPIO_PORTA, 0)
+#define GPIO_DIAG			GPIO(GPIO_PORTA, 1)
 #define GPIO_DISABLE		GPIO(GPIO_PORTA, 14)
 
 SercomSpiHwConfig_t remoteLedSpiHwConfig;
