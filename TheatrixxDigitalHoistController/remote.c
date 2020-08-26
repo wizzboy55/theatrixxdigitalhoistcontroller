@@ -62,7 +62,7 @@ void vRemoteTask(void* p) {
 		//		samgpio_setPinLevel(GPIO_LED_LINK, remoteLink == 0);
 			
 		reset = samgpio_getPinLevel(GPIO_SWITCH_RESET) == 0;
-		lock = samgpio_getPinLevel(GPIO_SWITCH_LOCK) == 0;
+		lock = samgpio_getPinLevel(GPIO_SWITCH_LOCK) == 1;
 		go = samgpio_getPinLevel(GPIO_SWITCH_GO) == 0;
 			
 		if(reset == pdTRUE) {
