@@ -16,7 +16,7 @@
 #include "HardwareDescriptor.h"
 
 typedef uint8_t Checksum_t;
-enum CommsReplies_e {eNoReply = 0, eError = 0xAA, eOK = 0xCC};
+enum CommsReplies_e {eNoReply = 0, eError = 0xAA, eOK = 0xCC, eEStop = 0xEE};
 
 typedef struct __attribute__ ((packed)) {
 	Rs485Address_t address;

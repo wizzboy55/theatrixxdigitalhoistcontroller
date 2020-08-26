@@ -12,6 +12,7 @@
 #include "FreeRTOS.h"
 #include "HardwareDescriptor.h"
 
+BaseType_t xControlEStopPresent(void);
 void vControlNewMessage(HoistControl_t *newMessage);
 void vControlStop(void);
 BaseType_t xControlInit(void);

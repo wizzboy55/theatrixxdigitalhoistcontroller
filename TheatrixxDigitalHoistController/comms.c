@@ -110,7 +110,11 @@ void vCommsSlaveTask(void *p) {
 				replyMessage.address = currentMessage.address;
 				replyMessage.checksum = 0;
 				replyMessage.sequence = currentMessage.sequence;
-				replyMessage.reply = eOK;
+				if(xControlEStopPresent() == pdTRUE) {
+					replyMessage.reply = eEStop;
+				} else {
+					replyMessage.reply = eOK;
+				}
 				replyMessage.checksum = xCommsComputeChecksum((uint8_t*)&replyMessage, sizeof(replyMessage));
 
 				xRs485SendMessage(&rs485Status, (uint8_t*)&replyMessage, sizeof(replyMessage), portMAX_DELAY);
