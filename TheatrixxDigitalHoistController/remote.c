@@ -85,7 +85,7 @@ void vRemoteTask(void* p) {
 			vSpiRegistersReadWriteRegistersAsync(&remoteLedShiftRegisterConfig, (uint8_t*)&hoists_currentSwitches, NULL, sizeof(hoists_currentSwitches), NULL);
 		}
 		
-		if(go == pdTRUE) {
+		if(go == pdTRUE && lock == pdFALSE) {
 			vCommsSendMessage(&hoists_currentSwitches);
 		} else {
 			vCommsSendMessage(&hoists_emptySwitches);
