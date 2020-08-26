@@ -17,9 +17,14 @@ ControlRegisters_t emptyRegisters;
 
 TimerHandle_t controlTimer;
 #define CONTROL_TIMEOUT 150
-BaseType_t controlTimedOut = pdFALSE;
+BaseType_t controlTimedOut = pdTRUE;
 uint8_t uValidMessagesReceived = 0;
 #define CONTROL_VALIDMESSAGESTHRESHOLD 5
+BaseType_t xControlEmergencyState = pdFALSE;
+BaseType_t xControlLinkState = pdFALSE;
+
+TimerHandle_t controlBlinkTimer;
+uint8_t controlBlink = 0;
 
 inline void vControlEnableContactors(void) {
 	samgpio_setPinFast(GPIO_DISABLE);
@@ -54,14 +59,18 @@ void vControlNewMessage(HoistControl_t *newMessage) {
 	}
 	
 	controlRegisters.led_go = led_go;
-	controlRegisters.led_link = 0xFF;
 	
 	if(uValidMessagesReceived < CONTROL_VALIDMESSAGESTHRESHOLD) {
 		uValidMessagesReceived++;
 	} else {
 		xTimerReset(controlTimer, portMAX_DELAY);
 		controlTimedOut = pdFALSE;
+		xControlLinkState = pdTRUE;
 	}
+}
+
+void vControlBlinkTimerCallback(TimerHandle_t xTimer) {
+	controlBlink++;
 }
 
 void vControlTask(void* p) {
@@ -69,6 +78,20 @@ void vControlTask(void* p) {
 	memset(&emptyRegisters, 0, sizeof(emptyRegisters));
 	
 	for(;;) {
+
+		xControlEmergencyState = xControlEStopPresent() == pdFALSE;
+
+		if(xControlLinkState && xControlEmergencyState == pdFALSE) {
+			controlRegisters.led_link = 0xFF;
+			emptyRegisters.led_link = 0xFF;
+		} else if(xControlLinkState && (controlBlink & BLINKMASK)) {
+			controlRegisters.led_link = 0xFF;
+			emptyRegisters.led_link = 0xFF;
+		} else {
+			controlRegisters.led_link = 0x00;
+			emptyRegisters.led_link = 0x00;
+		}
+
 		if(controlTimedOut || xControlEStopPresent() == pdFALSE) {
 			vControlDisableContactors();
 			vSpiRegistersReadWriteRegistersAsync(&controlShiftRegisterConfig, emptyRegisters.reg, NULL, sizeof(ControlRegisters_t), NULL);
@@ -83,6 +106,7 @@ void vControlTask(void* p) {
 void vControlTimerCallback(TimerHandle_t xTimer) {
 	uValidMessagesReceived = 0;
 	controlTimedOut = pdTRUE;
+	xControlLinkState = pdFALSE;
 }
 
 BaseType_t xControlInit(void) {
@@ -103,6 +127,9 @@ BaseType_t xControlInit(void) {
 	
 	controlTimer = xTimerCreate("ControlTimer", CONTROL_TIMEOUT / portTICK_PERIOD_MS, pdFALSE, NULL, vControlTimerCallback);
 	
+	controlBlinkTimer = xTimerCreate("BlinkTim", BLINK_TIMER_HALFPERIOD / portTICK_PERIOD_MS, pdTRUE, NULL, vControlBlinkTimerCallback);
+	res &= xTimerStart(controlBlinkTimer, portMAX_DELAY);
+
 	res &= xTaskCreate(vControlTask, "control", configMINIMAL_STACK_SIZE, NULL, configMAX_PRIORITIES - 2, NULL);
 	
 	return res;
