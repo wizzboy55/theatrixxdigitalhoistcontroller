@@ -91,4 +91,7 @@ typedef union __attribute__((packed)) {
 
 Rs485Config_t rs485Config;
 
+#define BLINKMASK 0x01
+#define BLINK_TIMER_HALFPERIOD 400
+
 #endif /* HARDWAREDESCRIPTOR_H_ */
