@@ -77,7 +77,7 @@ void vRemoteTask(void* p) {
 			}
 		}
 		
-		if(remoteEmergency && (remoteBlink & BLINKMASK)) {
+		if((remoteEmergency == pdTRUE) && (remoteBlink & BLINKMASK)) {
 			vSpiRegistersReadWriteRegistersAsync(&remoteLedShiftRegisterConfig, (uint8_t*)&hoists_emptySwitches, NULL, sizeof(hoists_emptySwitches), NULL);
 		} else {
 			vSpiRegistersReadWriteRegistersAsync(&remoteLedShiftRegisterConfig, (uint8_t*)&hoists_currentSwitches, NULL, sizeof(hoists_currentSwitches), NULL);

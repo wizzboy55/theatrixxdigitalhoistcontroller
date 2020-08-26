@@ -117,9 +117,9 @@ void vCommsSlaveTask(void *p) {
 				replyMessage.checksum = 0;
 				replyMessage.sequence = currentMessage.sequence;
 				if(xControlEStopPresent() == pdTRUE) {
-					replyMessage.reply = eEStop;
-				} else {
 					replyMessage.reply = eOK;
+				} else {
+					replyMessage.reply = eEStop;
 				}
 				replyMessage.checksum = xCommsComputeChecksum((uint8_t*)&replyMessage, sizeof(replyMessage));
 
