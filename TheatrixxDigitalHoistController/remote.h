@@ -12,5 +12,6 @@
 #include "HardwareDescriptor.h"
 
 BaseType_t xRemoteInit(void);
+void vRemoteSetLinkEmergency(BaseType_t remLink, BaseType_t remEmergency);
 
 #endif /* REMOTE_H_ */

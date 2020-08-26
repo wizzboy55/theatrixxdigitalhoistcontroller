@@ -20,13 +20,11 @@ HoistControl_t hoists_lastSwitches;
 HoistControl_t hoists_currentSwitches;
 HoistControl_t hoists_emptySwitches;
 
-BaseType_t remoteLink = 0;
-BaseType_t remoteEmergency = 1;
+BaseType_t remoteLink = pdFALSE;
+BaseType_t remoteEmergency = pdTRUE;
 
-TimerHandle_t blinkTimer;
-uint8_t blink = 0;
-#define BLINKMASK 0x01
-#define BLINK_TIMER_HALFPERIOD 400
+TimerHandle_t remoteBlinkTimer;
+uint8_t remoteBlink = 0;
 
 void vRemoteApplyButtons(uint8_t newSwitches, uint8_t lastSwitches, uint8_t oldSwitches, uint8_t* output) {
 	
@@ -58,8 +56,8 @@ void vRemoteTask(void* p) {
 	for(;;) {
 		vTaskDelay(10 / portTICK_PERIOD_MS);
 			
-		samgpio_setPinLevel(GPIO_LED_ESTOP, remoteEmergency != 0);
-		//		samgpio_setPinLevel(GPIO_LED_LINK, remoteLink == 0);
+		samgpio_setPinLevel(GPIO_LED_ESTOP, remoteEmergency != pdFALSE);
+		samgpio_setPinLevel(GPIO_LED_LINK, remoteLink != pdTRUE);
 			
 		reset = samgpio_getPinLevel(GPIO_SWITCH_RESET) == 0;
 		lock = samgpio_getPinLevel(GPIO_SWITCH_LOCK) == 1;
@@ -79,7 +77,7 @@ void vRemoteTask(void* p) {
 			}
 		}
 		
-		if(remoteEmergency && (blink & BLINKMASK)) {
+		if(remoteEmergency && (remoteBlink & BLINKMASK)) {
 			vSpiRegistersReadWriteRegistersAsync(&remoteLedShiftRegisterConfig, (uint8_t*)&hoists_emptySwitches, NULL, sizeof(hoists_emptySwitches), NULL);
 		} else {
 			vSpiRegistersReadWriteRegistersAsync(&remoteLedShiftRegisterConfig, (uint8_t*)&hoists_currentSwitches, NULL, sizeof(hoists_currentSwitches), NULL);
@@ -93,8 +91,8 @@ void vRemoteTask(void* p) {
 	}
 }
 
-void vBlinkTimerCallback(TimerHandle_t xTimer) {
-	blink++;
+void vRemoteBlinkTimerCallback(TimerHandle_t xTimer) {
+	remoteBlink++;
 }
 
 BaseType_t xRemoteInit(void) {
@@ -119,11 +117,11 @@ BaseType_t xRemoteInit(void) {
 	samgpio_setPinDirection(GPIO_LED_ESTOP, GPIO_DIRECTION_OUT);
 	samgpio_setPinDirection(GPIO_LED_LINK, GPIO_DIRECTION_OUT);
 	
-	samgpio_setPinLevel(GPIO_LED_ESTOP, remoteEmergency != 0);
-	samgpio_setPinLevel(GPIO_LED_LINK, remoteLink == 0);
+	samgpio_setPinLevel(GPIO_LED_ESTOP, 0);
+	samgpio_setPinLevel(GPIO_LED_LINK, 0);
 	
-	blinkTimer = xTimerCreate("BlinkTim", BLINK_TIMER_HALFPERIOD / portTICK_PERIOD_MS, pdTRUE, NULL, vBlinkTimerCallback);
-	res &= xTimerStart(blinkTimer, portMAX_DELAY);
+	remoteBlinkTimer = xTimerCreate("BlinkTim", BLINK_TIMER_HALFPERIOD / portTICK_PERIOD_MS, pdTRUE, NULL, vRemoteBlinkTimerCallback);
+	res &= xTimerStart(remoteBlinkTimer, portMAX_DELAY);
 	res &= xTaskCreate(vRemoteTask, "remote", configMINIMAL_STACK_SIZE, NULL, configMAX_PRIORITIES - 2, NULL);
 	
 	return res;

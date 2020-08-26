@@ -10,6 +10,7 @@
 #include "queue.h"
 
 #include "control.h"
+#include "remote.h"
 
 HoistControl_t nextMessage;
 BaseType_t pendingMessage = pdFALSE;
@@ -72,8 +73,13 @@ void vCommsMasterTask(void *p) {
 			while(xQueueReceive(rs485Status.rxQueue, &rxMessage, pdMS_TO_TICKS(COMMS_TIMEOUT)) == pdTRUE) {
 				if(rxMessage.reply == eOK) {
 					vRs485SetLinkLed(&rs485Config);
+					vRemoteSetLinkEmergency(pdTRUE, pdFALSE);
+				} else if(rxMessage.reply == eEStop) {
+					vRs485SetLinkLed(&rs485Config);
+					vRemoteSetLinkEmergency(pdTRUE, pdTRUE);
 				} else {
 					vRs485ClearLinkLed(&rs485Config);
+					vRemoteSetLinkEmergency(pdFALSE, pdTRUE);
 				}
 				break;
 			}
