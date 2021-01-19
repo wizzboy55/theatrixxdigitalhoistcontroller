@@ -42,8 +42,19 @@ inline BaseType_t xControlShiftRegistersDiagnosticOK(void) {
 	return samgpio_getPinLevel(GPIO_DIAG) == 1;
 }
 
+BaseType_t xControlRegistersAreEmpty(ControlRegisters_t* controlRegisters) {
+	for(uint8_t i = 0; i < sizeof(HoistControl_t); i++) {
+		if(controlRegisters->hoistControl.reg[i] != 0x00) {
+			return pdFALSE;
+		}
+	}
+
+	return pdTRUE;
+}
+
 void vControlStop(void) {
 	controlTimedOut = pdTRUE;
+	vControlDisableContactors();
 	xGpioShiftRegistersPush(&controlShiftRegisterConfigGpio, emptyRegisters.reg, NULL, sizeof(ControlRegisters_t));
 }
 
@@ -76,7 +87,15 @@ void vControlBlinkTimerCallback(TimerHandle_t xTimer) {
 void vControlTask(void* p) {
 	
 	memset(&emptyRegisters, 0, sizeof(emptyRegisters));
-	
+
+	vControlDisableContactors();
+	for(uint8_t i = 0; i < 6; i++) {
+		controlRegisters.led_link = (1 << i);
+		controlRegisters.led_go = (1 << i);
+		vSpiRegistersWriteRegistersAsync(&controlShiftRegisterConfig, controlRegisters.reg, sizeof(ControlRegisters_t), NULL);
+		vTaskDelay(pdMS_TO_TICKS(100));
+	}
+
 	for(;;) {
 
 		xControlEmergencyState = xControlEStopPresent() == pdFALSE;
@@ -94,10 +113,16 @@ void vControlTask(void* p) {
 
 		if(controlTimedOut || xControlEStopPresent() == pdFALSE) {
 			vControlDisableContactors();
-			vSpiRegistersReadWriteRegistersAsync(&controlShiftRegisterConfig, emptyRegisters.reg, NULL, sizeof(ControlRegisters_t), NULL);
+			vSpiRegistersWriteRegistersAsync(&controlShiftRegisterConfig, emptyRegisters.reg, sizeof(ControlRegisters_t), NULL);
 		} else {
-			vSpiRegistersReadWriteRegistersAsync(&controlShiftRegisterConfig, controlRegisters.reg, NULL, sizeof(ControlRegisters_t), NULL);
-			vControlEnableContactors();
+			if(xControlRegistersAreEmpty(&controlRegisters)) {
+				vControlDisableContactors();
+				vSpiRegistersWriteRegistersAsync(&controlShiftRegisterConfig, emptyRegisters.reg, sizeof(ControlRegisters_t), NULL);
+			} else {
+				vControlDisableContactors();
+				vSpiRegistersWriteRegistersAsync(&controlShiftRegisterConfig, controlRegisters.reg, sizeof(ControlRegisters_t), NULL);
+				vControlEnableContactors();
+			}
 		}
 		vTaskDelay(25 / portTICK_PERIOD_MS);
 	}

@@ -34,7 +34,7 @@ SercomSpiHwConfig_t controlSpiHwConfig = {
 	.pin_clk = GPIO(GPIO_PORTA, 9),
 	.pin_cs = GPIO(GPIO_PORTA, 10),
 	.pinmux_sercom = PINMUX_PA08D_SERCOM2_PAD0,
-	.baud = 100000,
+	.baud = 50000,
 };
 
 SpiShiftRegistersConfig_t remoteLedShiftRegisterConfig = {
