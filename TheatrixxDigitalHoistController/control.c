@@ -149,6 +149,11 @@ BaseType_t xControlInit(void) {
 	
 	samgpio_setPinDirection(GPIO_SIGNAL_ESTOP, GPIO_DIRECTION_IN);
 	samgpio_setPinPullMode(GPIO_SIGNAL_ESTOP, GPIO_PULL_DOWN);
+
+	PORT->Group[GPIO_PORTA].PINCFG[8].bit.DRVSTR = 1;
+	PORT->Group[GPIO_PORTA].PINCFG[9].bit.DRVSTR = 1;
+	PORT->Group[GPIO_PORTA].PINCFG[10].bit.DRVSTR = 1;
+	PORT->Group[GPIO_PORTA].PINCFG[11].bit.DRVSTR = 1;
 	
 	controlTimer = xTimerCreate("ControlTimer", CONTROL_TIMEOUT / portTICK_PERIOD_MS, pdFALSE, NULL, vControlTimerCallback);
 	
