@@ -171,6 +171,18 @@
       </ToolNumber>
       <ToolName xmlns="">Custom Programming Tool</ToolName>
     </custom>
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.45.0" />
+        </dependencies>
+      </framework-data>
+    </AsfFrameworkConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -218,6 +230,7 @@
       <Value>../hpl/pm</Value>
       <Value>../hpl/port</Value>
       <Value>../hri</Value>
+      <Value>%24(PackRepoDir)\Atmel\SAMC20_DFP\1.1.151\samc20\include</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
@@ -257,6 +270,7 @@
       <Value>../hpl/pm</Value>
       <Value>../hpl/port</Value>
       <Value>../hri</Value>
+      <Value>%24(PackRepoDir)\Atmel\SAMC20_DFP\1.1.151\samc20\include</Value>
     </ListValues>
   </armgcc.assembler.general.IncludePaths>
   <armgcc.preprocessingassembler.general.IncludePaths>
@@ -279,6 +293,7 @@
       <Value>../hpl/pm</Value>
       <Value>../hpl/port</Value>
       <Value>../hri</Value>
+      <Value>%24(PackRepoDir)\Atmel\SAMC20_DFP\1.1.151\samc20\include</Value>
     </ListValues>
   </armgcc.preprocessingassembler.general.IncludePaths>
 </ArmGcc>
@@ -330,6 +345,7 @@
       <Value>../hpl/pm</Value>
       <Value>../hpl/port</Value>
       <Value>../hri</Value>
+      <Value>%24(PackRepoDir)\Atmel\SAMC20_DFP\1.1.151\samc20\include</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
@@ -370,6 +386,7 @@
       <Value>../hpl/pm</Value>
       <Value>../hpl/port</Value>
       <Value>../hri</Value>
+      <Value>%24(PackRepoDir)\Atmel\SAMC20_DFP\1.1.151\samc20\include</Value>
     </ListValues>
   </armgcc.assembler.general.IncludePaths>
   <armgcc.assembler.debugging.DebugLevel>Default (-g)</armgcc.assembler.debugging.DebugLevel>
@@ -393,6 +410,7 @@
       <Value>../hpl/pm</Value>
       <Value>../hpl/port</Value>
       <Value>../hri</Value>
+      <Value>%24(PackRepoDir)\Atmel\SAMC20_DFP\1.1.151\samc20\include</Value>
     </ListValues>
   </armgcc.preprocessingassembler.general.IncludePaths>
   <armgcc.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</armgcc.preprocessingassembler.debugging.DebugLevel>
@@ -400,9 +418,6 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="atmel_start.c">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="atmel_start.h">
       <SubType>compile</SubType>
     </Compile>
@@ -739,6 +754,9 @@
     <Compile Include="remote.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="samlibs\atmel_start.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="samlibs\comm\devices\gpio_shiftregisters.c">
       <SubType>compile</SubType>
     </Compile>
@@ -773,6 +791,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="samlibs\dmx\rdm.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="samlibs\faults.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="samlibs\faults.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="samlibs\FreeRTOS\RTOS\croutine.c">
