@@ -18,6 +18,7 @@ Setup_atprogram_Path.bat
 ```
 
 This script searches common Microchip/Atmel Studio install folders for `atprogram.exe` and adds its directory to your user `Path`.
+It prints detailed status/error messages and pauses at the end so you can review the result.
 
 3. Open a new Command Prompt and verify:
 
