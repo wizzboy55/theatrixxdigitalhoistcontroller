@@ -11,11 +11,15 @@ Theatrixx Technologies Digital Hoist Controller
 ## Set Up `atprogram`
 
 1. Install Microchip Studio (or Atmel Studio) so `atprogram.exe` is available.
-2. Locate `atprogram.exe` (commonly under an `atbackend` folder), for example:
-   - `C:\Program Files\Microchip\Studio\7.0\atbackend`
-   - `C:\Program Files (x86)\Atmel\Studio\7.0\atbackend`
-3. Add that folder to your Windows `Path` environment variable.
-4. Open a new Command Prompt and verify:
+2. Run the helper script from the repository root:
+
+```bat
+Setup_atprogram_Path.bat
+```
+
+This script searches common Microchip/Atmel Studio install folders for `atprogram.exe` and adds its directory to your user `Path`.
+
+3. Open a new Command Prompt and verify:
 
 ```bat
 atprogram --version
