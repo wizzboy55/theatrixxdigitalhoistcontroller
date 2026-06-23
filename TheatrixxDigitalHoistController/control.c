@@ -14,6 +14,7 @@
 
 ControlRegisters_t controlRegisters;
 ControlRegisters_t emptyRegisters;
+ControlRegisters_t lastControlRegisters;
 
 TimerHandle_t controlTimer;
 #define CONTROL_TIMEOUT 150
@@ -50,6 +51,16 @@ BaseType_t xControlRegistersAreEmpty(ControlRegisters_t* controlRegisters) {
 	}
 
 	return pdTRUE;
+}
+
+BaseType_t xControlRegistersAreDifferent(ControlRegisters_t* reg1, ControlRegisters_t* reg2) {
+	for(uint8_t i = 0; i < sizeof(HoistControl_t); i++) {
+		if(reg1->hoistControl.reg[i] != reg2->hoistControl.reg[i]) {
+			return pdTRUE;
+		}
+	}
+
+	return pdFALSE;
 }
 
 void vControlStop(void) {
@@ -119,11 +130,14 @@ void vControlTask(void* p) {
 				vControlDisableContactors();
 				vSpiRegistersWriteRegistersAsync(&controlShiftRegisterConfig, emptyRegisters.reg, sizeof(ControlRegisters_t), NULL);
 			} else {
-				vControlDisableContactors();
-				vSpiRegistersWriteRegistersAsync(&controlShiftRegisterConfig, controlRegisters.reg, sizeof(ControlRegisters_t), NULL);
+				//vControlDisableContactors();
+				if(xControlRegistersAreDifferent(&controlRegisters, &lastControlRegisters)) {
+					vSpiRegistersWriteRegistersAsync(&controlShiftRegisterConfig, controlRegisters.reg, sizeof(ControlRegisters_t), NULL);
+				}
 				vControlEnableContactors();
 			}
 		}
+		lastControlRegisters = controlRegisters;
 		vTaskDelay(25 / portTICK_PERIOD_MS);
 	}
 }
