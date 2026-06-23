@@ -10,7 +10,7 @@ Theatrixx Technologies Digital Hoist Controller
 
 ## Set Up `atprogram`
 
-1. Install Microchip Studio (or Atmel Studio) so `atprogram.exe` is available.
+1. Install [Microchip Studio](https://www.microchip.com/en-us/tools-resources/develop/microchip-studio) (or Atmel Studio) so `atprogram.exe` is available.
 2. Run the helper script from the repository root:
 
 ```bat
